@@ -131,3 +131,54 @@ fn remove_comment<'a>(events: impl Iterator<Item = Event<'a>>) -> impl Iterator<
     }
     filtered.into_iter()
 }
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn remove_comments() {
+        // oneline comment (one Html event)
+        assert_comment_removal("<!-- double-hyphen -->");
+
+        // oneline invalid comment (one Html event)
+        assert_comment_removal("<!-- --double-hyphen -->");
+
+        // multiline invalid comment (multi html events)
+        assert_comment_removal(
+            "<!-- \n\
+            --double-hyphen \n\
+            -->\n",
+        );
+
+        // oneline comment in a paragraph (one Html event)
+        assert_comment_removal("text <!-- double-hyphen -->");
+
+        // oneline invalid comment in paragraph (multi Text event)
+        assert_comment_removal("text <!-- --double-hyphen -->");
+
+        // multiline invalid comment in a paragraph (multi Text event)
+        assert_comment_removal(
+            "text <!-- \n\
+            --double-hyphen \n\
+            \n-->",
+        );
+
+        // multiline invalid comment across multi paragraph (multi Text event)
+        assert_comment_removal(
+            "text <!-- \n\n\
+            --double-hyphen \n\n\
+            \n-->",
+        );
+    }
+
+    fn assert_comment_removal(s: &str) {
+        let parser = mdbook::utils::new_cmark_parser(s, false);
+
+        let events = crate::remove_comment(parser);
+        let mut buf = String::new();
+        pulldown_cmark::html::push_html(&mut buf, events);
+
+        log::debug!("RENDERED: {buf}");
+        assert!(!buf.contains("double-hyphen"));
+        assert!(!buf.contains("--"));
+    }
+}
