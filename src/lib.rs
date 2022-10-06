@@ -22,7 +22,7 @@ impl Preprocessor for NoCommentPreprocessor {
         book.for_each_mut(|item: &mut BookItem| {
             if let BookItem::Chapter(ref mut chapter) = *item {
                 let content_events =
-                    Parser::new_ext(&chapter.content, pulldown_cmark::Options::empty());
+                    Parser::new_ext(&chapter.content, pulldown_cmark::Options::all());
                 let events = remove_comment(content_events);
                 let mut buf = String::with_capacity(chapter.content.len());
                 cmark(events, &mut buf).unwrap();
