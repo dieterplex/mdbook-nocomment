@@ -7,11 +7,11 @@ description = "Remove all html comments"
 keywords = ["mdbook", "proprocessor"]
 readme = "README.md"
 repository = "https://github.com/dieterplex/mdbook-nocomment"
-license = "LGPL-3.0-or-later"
+license = "LGPL-3.0-or-later OR MIT"
 
 [dependencies]
 anyhow = "1.0"
-clap = { version = "3.2", default-features = false }
+clap = { version = "3.2", default-features = false, features = ["std"]}
 itertools = "0.10"
 log = "0.4"
 mdbook = { version = "0.4", default-features = false }
