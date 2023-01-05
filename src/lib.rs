@@ -2,7 +2,6 @@
 
 use anyhow::Result;
 use itertools::Itertools;
-use log;
 use mdbook::{
     book::Book,
     preprocess::{Preprocessor, PreprocessorContext},
@@ -42,11 +41,7 @@ fn remove_comment<'a>(events: impl Iterator<Item = Event<'a>>) -> impl Iterator<
     const COMMENT_END: &str = "-->";
     let mut filtered = vec![];
     let mut mp = events.multipeek();
-    loop {
-        let current_event = match mp.next() {
-            Some(e) => e,
-            None => break,
-        };
+    while let Some(current_event) = mp.next() {
         match current_event {
             Event::Text(ref t1) if t1.as_ref().eq("<") => {
                 let next = mp.peek();
